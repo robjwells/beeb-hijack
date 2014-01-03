@@ -2,20 +2,8 @@
 """
 Tools for helping Audio Hijack Pro record BBC Radio programmes
 
-Command-line usage:
-    bbcradio.py <programme name>
-
-The programme name should be a key of PROG_DICT, and its value is
-the unique programme code used on the BBC website.
-
-This programme code is then used to fetch the unique episode code,
-from which we can create the streaming URL and fetch the track list.
-
-When run as a shell script, it prints the URL to stdout and writes
-the track list to a file in the Audio Hijack Pro recordings directory,
-with the intention that this is cleaned up by a post-processing
-AppleScript run by Audio Hijack Pro once the recording is finished.
-
+This module should not be run directly, but rather imported
+by pre/post-recording scripts called by Audio Hijack Pro.
 """
 
 import sys
