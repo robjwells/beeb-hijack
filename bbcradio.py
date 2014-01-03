@@ -25,6 +25,12 @@ from bs4 import BeautifulSoup as soup
 PROG_DICT = {'jazz on 3': 'b006tt0y',
              'jazz line-up': 'b006tnmw'}
 
+USAGE = '''\
+Usage:  {} <programme name>
+        Where <programme name> is one of:
+            {}
+'''.format(sys.argv[0], '\n            '.join(PROG_DICT.keys()))
+
 
 def latest_episode_code(programme):
     """Returns the code for a programme’s latest episode"""

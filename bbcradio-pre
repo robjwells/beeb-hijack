@@ -3,15 +3,10 @@
 import sys
 import bbcradio
 
-USAGE = '''\
-Usage:  {} <programme name>
-        Where <programme name> is a PROG_DICT key in bbcradio.py\
-'''.format(sys.argv[0])
-
 if len(sys.argv) > 1 and sys.argv[1] in bbcradio.PROG_DICT.keys():
     programme_code = bbcradio.PROG_DICT[sys.argv[1]]
 else:
-    print(USAGE, file=sys.stderr)
+    print(bbcradio.USAGE, file=sys.stderr)
     sys.exit(-1)
 
 episode_code = bbcradio.latest_episode_code(programme_code)
