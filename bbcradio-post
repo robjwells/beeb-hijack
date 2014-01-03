@@ -1,0 +1,13 @@
+#!/usr/local/bin/python3
+
+import sys
+import bbcradio
+
+if len(sys.argv) > 1 and sys.argv[1] in bbcradio.PROG_DICT.keys():
+    programme_code = bbcradio.PROG_DICT[sys.argv[1]]
+    episode_code = bbcradio.latest_episode_code(programme_code)
+else:
+    sys.exit('Arguments are invalid. Supply a valid programme title.')
+
+details = bbcradio.fetch_episode_details(episode_code)
+print('^^'.join(details))
