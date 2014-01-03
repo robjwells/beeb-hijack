@@ -81,17 +81,6 @@ def fetch_episode_details(episode):
     return (descriptive_title, broadcast_date, track_list_string)
 
 
-
-def write_track_list(track_list):
-    """Writes a track list string to the Audio Hijack Pro directory"""
-    track_file_path = os.path.join(
-        os.path.expanduser('~'), 'Music', 'Audio Hijack',
-        sys.argv[1] + ' ' + date.today().isoformat()
-        )
-    with open(track_file_path, mode='w', encoding='utf-8') as track_file:
-        track_file.write(track_list)
-
-
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] in PROG_DICT.keys():
         programme_code = PROG_DICT[sys.argv[1]]
