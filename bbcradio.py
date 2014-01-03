@@ -91,7 +91,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] in PROG_DICT.keys():
         programme_code = PROG_DICT[sys.argv[1]]
         episode_code = latest_episode_code(programme_code)
-        write_track_list(fetch_track_list(episode_code))
         print(episode_player_url(episode_code))
     else:
         sys.exit('Arguments are invalid. Supply a valid programme title.')
