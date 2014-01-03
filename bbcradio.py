@@ -18,10 +18,8 @@ AppleScript run by Audio Hijack Pro once the recording is finished.
 
 """
 
-import os
 import sys
 import requests
-from datetime import date
 from bs4 import BeautifulSoup as soup
 
 PROG_DICT = {'jazz on 3': 'b006tt0y',
@@ -79,12 +77,3 @@ def fetch_episode_details(episode):
     date_node = episode_soup.find('p', {'datatype': 'xsd:datetime'})
     broadcast_date = date_node['content'].split('T')[0]
     return (broadcast_date, descriptive_title, track_list_string)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1] in PROG_DICT.keys():
-        programme_code = PROG_DICT[sys.argv[1]]
-        episode_code = latest_episode_code(programme_code)
-        print(episode_player_url(episode_code))
-    else:
-        sys.exit('Arguments are invalid. Supply a valid programme title.')
