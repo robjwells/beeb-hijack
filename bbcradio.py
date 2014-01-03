@@ -49,13 +49,13 @@ def episode_player_url(episode):
     return player_url.format(episode)
 
 
-def fetch_track_list(episode):
+def fetch_episode_details(episode):
     """Returns a formatted track list string for the given episode code"""
     episode_url = 'http://www.bbc.co.uk/programmes/{}'
     episode_response = requests.get(episode_url.format(episode))
     episode_soup = soup(episode_response.text)
-    track_nodes = episode_soup.select('li.segment.track')
 
+    track_nodes = episode_soup.select('li.segment.track')
     track_list = []
     for node in track_nodes:
         try:
@@ -74,7 +74,12 @@ def fetch_track_list(episode):
         except AttributeError:
             continue
 
-    return '\n\n'.join(track_list)
+    track_list_string = '\n\n'.join(track_list)
+    descriptive_title = episode_soup.find(class_='episode-title').text
+    date_node = episode_soup.find('p', {'datatype': 'xsd:datetime'})
+    broadcast_date = date_node['content'].split('T')[0]
+    return (descriptive_title, broadcast_date, track_list_string)
+
 
 
 def write_track_list(track_list):
