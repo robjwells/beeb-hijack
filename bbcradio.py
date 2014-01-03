@@ -15,7 +15,7 @@ PROG_DICT = {'jazz on 3': 'b006tt0y',
 
 
 def latest_episode_code(programme):
-    """Returns the code for a programme’s latest episode"""
+    """Get the code for a programme’s most recent episode"""
     guide_url = 'http://www.bbc.co.uk/programmes/{}/episodes/player'
     guide_response = requests.get(guide_url.format(programme))
     guide_soup = soup(guide_response.text)
@@ -30,13 +30,13 @@ def latest_episode_code(programme):
 
 
 def episode_player_url(episode):
-    """Returns the player URL for the given episode code"""
+    """Return the player URL for the given episode code"""
     player_url = 'http://www.bbc.co.uk/radio/player/{}'
     return player_url.format(episode)
 
 
 def fetch_episode_details(episode):
-    """Returns a formatted track list string for the given episode code"""
+    """Construct a tuple of the episode’s date, title and track list"""
     episode_url = 'http://www.bbc.co.uk/programmes/{}'
     episode_response = requests.get(episode_url.format(episode))
     episode_soup = soup(episode_response.text)
