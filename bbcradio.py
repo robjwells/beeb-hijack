@@ -78,7 +78,7 @@ def fetch_episode_details(episode):
     descriptive_title = episode_soup.find(class_='episode-title').text
     date_node = episode_soup.find('p', {'datatype': 'xsd:datetime'})
     broadcast_date = date_node['content'].split('T')[0]
-    return (descriptive_title, broadcast_date, track_list_string)
+    return (broadcast_date, descriptive_title, track_list_string)
 
 
 if __name__ == '__main__':
