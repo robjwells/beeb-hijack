@@ -10,4 +10,4 @@ else:
     sys.exit('Arguments are invalid. Supply a valid programme title.')
 
 details = bbcradio.fetch_episode_details(episode_code)
-print('^^'.join(details))
+print('|'.join(details))
