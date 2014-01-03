@@ -11,7 +11,11 @@ Accepted programmes:
 usage = '''\
 Usage:
     {0} url <programme>
-    {0} details <programme>
+    {0} details [--clean] <programme>
+
+Options:
+    --clean     Use two newlines instead of a pipe
+                to separate the episode details
 
 {1}'''.format('beebhijack', programmes)
 
@@ -29,4 +33,5 @@ if args['url']:
     print(bbcradio.episode_player_url(episode_code))
 elif args['details']:
     details = bbcradio.fetch_episode_details(episode_code)
-    print('|'.join(details))
+    sep = '\n\n' if args['--clean'] else '|'
+    print(sep.join(details))
