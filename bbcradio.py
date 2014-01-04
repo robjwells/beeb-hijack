@@ -35,7 +35,7 @@ def episode_player_url(episode):
     return player_url.format(episode)
 
 
-def fetch_episode_details(episode):
+def episode_details(episode):
     """Construct a tuple of the episode’s date, title and track list"""
     episode_url = 'http://www.bbc.co.uk/programmes/{}'
     episode_response = requests.get(episode_url.format(episode))
