@@ -10,14 +10,14 @@ Accepted programmes:
 
 usage = '''\
 Usage:
-    {0} url <programme>
-    {0} details [--clean] <programme>
+    {name} url <programme>
+    {name} details [--clean] <programme>
 
 Options:
     --clean     Use two newlines instead of a pipe
                 to separate the episode details
 
-{1}'''.format('beebhijack', programmes)
+{prog_list}'''.format(name='beebhijack', prog_list=programmes)
 
 args = docopt(usage)
 
