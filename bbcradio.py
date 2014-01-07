@@ -39,7 +39,7 @@ def episode_details(episode):
     """Construct a tuple of the episode’s date, title and track list"""
     episode_url = 'http://www.bbc.co.uk/programmes/{}'
     episode_response = urlopen(episode_url.format(episode))
-    episode_soup = soup(episode_response.read().decode('utf-8'))
+    episode_soup = soup(episode_response.read().decode())
 
     track_nodes = episode_soup.select('li.segment.track')
     track_list = []
