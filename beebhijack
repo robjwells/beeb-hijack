@@ -34,4 +34,4 @@ if args['url']:
 elif args['details']:
     details = bbcradio.episode_details(episode_code)
     sep = '\n\n' if args['--clean'] else '|'
-    print(sep.join(details))
+    sys.stdout.buffer.write(sep.join(details).encode())
