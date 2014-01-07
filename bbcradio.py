@@ -7,7 +7,7 @@ by pre/post-recording scripts called by Audio Hijack Pro.
 """
 
 import sys
-import requests
+from urllib.request import urlopen
 from bs4 import BeautifulSoup as soup
 
 PROG_DICT = {'jazz on 3': 'b006tt0y',
@@ -17,8 +17,8 @@ PROG_DICT = {'jazz on 3': 'b006tt0y',
 def latest_episode_code(programme):
     """Get the code for a programme’s most recent episode"""
     guide_url = 'http://www.bbc.co.uk/programmes/{}/episodes/player'
-    guide_response = requests.get(guide_url.format(programme))
-    guide_soup = soup(guide_response.text)
+    guide_response = urlopen(guide_url.format(programme))
+    guide_soup = soup(guide_response.read().decode())
 
     try:
         soup_node = guide_soup.find(class_='episode')
@@ -38,8 +38,8 @@ def episode_player_url(episode):
 def episode_details(episode):
     """Construct a tuple of the episode’s date, title and track list"""
     episode_url = 'http://www.bbc.co.uk/programmes/{}'
-    episode_response = requests.get(episode_url.format(episode))
-    episode_soup = soup(episode_response.text)
+    episode_response = urlopen(episode_url.format(episode))
+    episode_soup = soup(episode_response.read().decode('utf-8'))
 
     track_nodes = episode_soup.select('li.segment.track')
     track_list = []
