@@ -21,7 +21,7 @@ Options:
 
 args = docopt(usage)
 
-if args['<programme>'] not in bbcradio.PROG_DICT.keys():
+if args['<programme>'] not in bbcradio.PROG_DICT:
     print('Given programme is not in the dictionary', file=sys.stderr)
     print(programmes, file=sys.stderr)
     sys.exit(-1)
