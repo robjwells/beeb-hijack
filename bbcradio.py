@@ -8,6 +8,7 @@ by pre/post-recording scripts called by Audio Hijack Pro.
 
 import sys
 from urllib.request import urlopen
+from urllib.error import HTTPError
 from bs4 import BeautifulSoup as soup
 
 PROG_DICT = {'jazz on 3': 'b006tt0y',
@@ -17,7 +18,10 @@ PROG_DICT = {'jazz on 3': 'b006tt0y',
 def latest_episode_code(programme):
     """Get the code for a programme’s most recent episode"""
     guide_url = 'http://www.bbc.co.uk/programmes/{}/episodes/player'
-    guide_response = urlopen(guide_url.format(programme))
+    try:
+        guide_response = urlopen(guide_url.format(programme))
+    except HTTPError:
+        return None
     guide_soup = soup(guide_response.read().decode())
 
     try:
