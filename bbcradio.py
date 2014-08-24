@@ -66,6 +66,6 @@ def episode_details(episode):
 
     track_list_string = '\n\n'.join(track_list)
     descriptive_title = episode_soup.find(class_='episode-title').text
-    date_node = episode_soup.find('p', {'datatype': 'xsd:datetime'})
+    date_node = episode_soup.find(attrs={'datatype': 'xsd:datetime'})
     broadcast_date = date_node['content'].split('T')[0]
     return (broadcast_date, descriptive_title, track_list_string)
