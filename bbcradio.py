@@ -6,6 +6,7 @@ This module should not be run directly, but rather imported
 by pre/post-recording scripts called by Audio Hijack Pro.
 """
 
+import re
 import sys
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -24,11 +25,8 @@ def latest_episode_code(programme):
         return None
     guide_soup = soup(guide_response.read().decode())
 
-    try:
-        soup_node = guide_soup.find(class_='episode')
-        code = soup_node.a['href'].split('/')[-1]
-    except AttributeError:
-        sys.exit('No episodes available')
+    soup_node = guide_soup.find(class_='programme--episode')
+    code = soup_node['resource'].split('/')[-1]
 
     return code
 
@@ -41,20 +39,20 @@ def episode_player_url(episode):
 
 def episode_details(episode):
     """Construct a tuple of the episode’s date, title and track list"""
-    episode_url = 'http://www.bbc.co.uk/programmes/{}'
-    episode_response = urlopen(episode_url.format(episode))
-    episode_soup = soup(episode_response.read().decode())
+    segments_url = 'http://www.bbc.co.uk/programmes/{}/segments'
+    segments_response = urlopen(segments_url.format(episode))
+    segments_soup = soup(segments_response.read().decode())
 
-    track_nodes = episode_soup.select('li.segment.track')
+    track_nodes = segments_soup.find_all(class_='segment__track')
     track_list = []
     for node in track_nodes:
         try:
             artist = node.find(class_='artist').text
-            title = node.find(class_='title').text
+            title = node.find('p', property='name').text
 
             # Extra try block in case times are missing
             try:
-                time = node.find(class_='play-time').text
+                time = node.find(text=re.compile(r'^\d{2}:\d{2}$'))
             except AttributeError:
                 time = None
 
@@ -65,7 +63,11 @@ def episode_details(episode):
             continue
 
     track_list_string = '\n\n'.join(track_list)
-    descriptive_title = episode_soup.find(class_='episode-title').text
-    date_node = episode_soup.find(attrs={'datatype': 'xsd:datetime'})
+
+    prog_page = 'http://www.bbc.co.uk/programmes/{}'
+    prog_response = urlopen(prog_page.format(episode))
+    prog_soup = soup(prog_response.read().decode())
+    descriptive_title = prog_soup.h1.text
+    date_node = prog_soup.find(attrs={'datatype': 'xsd:dateTime'})
     broadcast_date = date_node['content'].split('T')[0]
     return (broadcast_date, descriptive_title, track_list_string)
