@@ -51,12 +51,7 @@ def episode_details(episode):
             try:
                 artist = node.find(class_='artist').text
                 title = node.find('p').find(property='name').text
-
-                # Extra try block in case times are missing
-                try:
-                    time = node.find(text=re.compile(r'^\d{2}:\d{2}$'))
-                except AttributeError:
-                    time = None
+                time = node.find(text=re.compile(r'^\d{2}:\d{2}$'))
 
                 # Join details, filtering for None
                 details = '\n'.join([x for x in [time, artist, title] if x])
