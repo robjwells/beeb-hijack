@@ -10,6 +10,7 @@ import re
 import sys
 from urllib.request import urlopen
 from urllib.error import HTTPError
+
 from bs4 import BeautifulSoup as soup
 
 PROG_DICT = {'jazz on 3': 'b006tt0y',
@@ -40,29 +41,32 @@ def episode_player_url(episode):
 def episode_details(episode):
     """Construct a tuple of the episode’s date, title and track list"""
     segments_url = 'http://www.bbc.co.uk/programmes/{}/segments'
-    segments_response = urlopen(segments_url.format(episode))
-    segments_soup = soup(segments_response.read().decode())
+    try:
+        segments_response = urlopen(segments_url.format(episode))
+        segments_soup = soup(segments_response.read().decode())
 
-    track_nodes = segments_soup.find_all(class_='segment__track')
-    track_list = []
-    for node in track_nodes:
-        try:
-            artist = node.find(class_='artist').text
-            title = node.find('p', property='name').text
-
-            # Extra try block in case times are missing
+        track_nodes = segments_soup.find_all(class_='segment__track')
+        track_list = []
+        for node in track_nodes:
             try:
-                time = node.find(text=re.compile(r'^\d{2}:\d{2}$'))
+                artist = node.find(class_='artist').text
+                title = node.find('p').find(property='name').text
+
+                # Extra try block in case times are missing
+                try:
+                    time = node.find(text=re.compile(r'^\d{2}:\d{2}$'))
+                except AttributeError:
+                    time = None
+
+                # Join details, filtering for None
+                details = '\n'.join([x for x in [time, artist, title] if x])
+                track_list.append(details)
             except AttributeError:
-                time = None
+                continue
 
-            # Join details, filtering for None
-            details = '\n'.join([x for x in [time, artist, title] if x])
-            track_list.append(details)
-        except AttributeError:
-            continue
-
-    track_list_string = '\n\n'.join(track_list)
+        track_list_string = '\n\n'.join(track_list)
+    except HTTPError:
+        track_list_string = ''
 
     prog_page = 'http://www.bbc.co.uk/programmes/{}'
     prog_response = urlopen(prog_page.format(episode))
