@@ -26,9 +26,10 @@ if args['<programme>'] not in bbcradio.PROG_DICT:
     print(programmes, file=sys.stderr)
     sys.exit(-1)
 
-episode_code = bbcradio.latest_episode_code(args['<programme>'])
-if not episode_code:
-    sys.stderr.write('Encountered problem fetching latest episode code\n')
+try:
+    episode_code = bbcradio.latest_episode_code(args['<programme>'])
+except bbcradio.NoneAvailableError as e:
+    sys.stderr.write(str(e) + '\n')
     sys.exit(-1)
 
 if args['url']:
