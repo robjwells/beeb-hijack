@@ -1,11 +1,20 @@
 #!/usr/local/bin/python3
 
+import logging
 import sys
+
 import bbcradio
 from docopt import docopt
 
+logging.basicConfig(
+    level=logging.INFO,
+    style='{',
+    format='{asctime}  {levelname}  {message}',
+    datefmt='%Y-%m-%d %H:%M'
+)
+
 programmes = '''\
-Accepted programmes:
+Registered programmes:
     {}'''.format('\n    '.join(bbcradio.PROG_DICT.keys()))
 
 usage = '''\
@@ -19,23 +28,32 @@ Options:
 
 {prog_list}'''.format(name='beebhijack', prog_list=programmes)
 
-args = docopt(usage)
 
-if args['<programme>'] not in bbcradio.PROG_DICT:
-    print('Given programme is not in the dictionary', file=sys.stderr)
-    print(programmes, file=sys.stderr)
-    sys.exit(-1)
+def interface(argv):
+    args = docopt(usage, argv=argv)
 
-try:
-    episode_code = bbcradio.latest_episode_code(args['<programme>'])
-except bbcradio.NoneAvailableError as e:
-    sys.stderr.write(str(e) + '\n')
-    sys.exit(-1)
+    programme = args['<programme>']
+    if programme not in bbcradio.PROG_DICT:
+        msg = '{} is not a registered programme'.format(programme)
+#        logging.warning(msg)
+        print(msg, file=sys.stderr)
+        print(programmes, file=sys.stderr)
+        sys.exit(-1)
 
-if args['url']:
-    print(bbcradio.episode_player_url(episode_code))
-elif args['details']:
-    details = bbcradio.episode_details(episode_code)
-    sep = '\n\n' if args['--clean'] else '|'
-    joined = sep.join(details) + '\n'
-    sys.stdout.buffer.write(joined.encode())
+    try:
+        episode_code = bbcradio.latest_episode_code(args['<programme>'])
+    except bbcradio.NoneAvailableError as e:
+#        logging.warning(e)
+        print(e, file=sys.stderr)
+        sys.exit(-1)
+
+    if args['url']:
+        print(bbcradio.episode_player_url(episode_code))
+    elif args['details']:
+        details = bbcradio.episode_details(episode_code)
+        sep = '\n\n' if args['--clean'] else '|'
+        print(sep.join(details))
+
+
+if __name__ == '__main__':
+    interface(sys.argv[1:])
