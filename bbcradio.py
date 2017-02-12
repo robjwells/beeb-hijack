@@ -11,7 +11,7 @@ import sys
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
-from bs4 import BeautifulSoup as soup
+from bs4 import BeautifulSoup
 
 PROG_DICT = {'jazz on 3': 'b006tt0y',
              'jazz line-up': 'b006tnmw'}
@@ -24,7 +24,7 @@ def latest_episode_code(programme):
         guide_response = urlopen(guide_url.format(programme))
     except HTTPError:
         return None
-    guide_soup = soup(guide_response.read().decode())
+    guide_soup = BeautifulSoup(guide_response.read().decode(), 'html.parser')
 
     soup_node = guide_soup.find(class_='programme--episode')
     code = soup_node['resource'].split('/')[-1]
@@ -43,7 +43,8 @@ def episode_details(episode):
     segments_url = 'http://www.bbc.co.uk/programmes/{}/segments'
     try:
         segments_response = urlopen(segments_url.format(episode))
-        segments_soup = soup(segments_response.read().decode())
+        segments_soup = BeautifulSoup(segments_response.read().decode(),
+                                      'html.parser')
 
         track_nodes = segments_soup.find_all(class_='segment__track')
         track_list = []
@@ -65,7 +66,8 @@ def episode_details(episode):
 
     prog_page = 'http://www.bbc.co.uk/programmes/{}'
     prog_response = urlopen(prog_page.format(episode))
-    prog_soup = soup(prog_response.read().decode())
+    prog_soup = BeautifulSoup(prog_response.read().decode(),
+                              'html.parser')
     descriptive_title = prog_soup.h1.text
     date_node = prog_soup.find(attrs={'datatype': 'xsd:dateTime'})
     broadcast_date = date_node['content'].split('T')[0]
