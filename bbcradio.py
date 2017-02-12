@@ -33,11 +33,12 @@ def latest_episode_code(programme_name):
     prog_guide_url = guide_url.format(programme_code)
     try:
         guide_response = urlopen(prog_guide_url)
-    except HTTPError:
+    except HTTPError as e:
         logger.warning((
             'HTTP error occurred when trying to open {} '
             'for programme {}'
             ).format(prog_guide_url, programme_name))
+        logger.warning(e)
         raise NoneAvailableError(
             'Could not open the guide page for {}'.format(programme_name)
             )
@@ -46,6 +47,8 @@ def latest_episode_code(programme_name):
     soup_node = guide_soup.find(class_='programme--episode')
     try:
         ep_code = soup_node['resource'].split('/')[-1]
+        logger.info(
+            'Latest episode for {} is {}'.format(programme_name, ep_code))
         return ep_code
     except TypeError:
         logger.warning(
@@ -65,8 +68,12 @@ def episode_player_url(episode):
 def episode_details(episode):
     """Construct a tuple of the episode’s date, title and track list"""
     segments_url = 'http://www.bbc.co.uk/programmes/{}/segments'
+    prog_segments_url = segments_url.format(episode)
     try:
-        segments_response = urlopen(segments_url.format(episode))
+        segments_response = urlopen(prog_segments_url)
+        logger.info(
+            'Opened {} for episode details for {}'.format(
+                prog_segments_url, episode))
         segments_soup = BeautifulSoup(segments_response.read().decode(),
                                       'html.parser')
 
@@ -85,7 +92,12 @@ def episode_details(episode):
                 continue
 
         track_list_string = '\n\n'.join(track_list)
-    except HTTPError:
+    except HTTPError as e:
+        logger.warning((
+            'HTTP error occurred when trying to open {} '
+            'for programme {}'
+            ).format(prog_segments_url, programme_name))
+        logger.warning(e)
         track_list_string = ''
 
     prog_page = 'http://www.bbc.co.uk/programmes/{}'
