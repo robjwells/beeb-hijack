@@ -17,6 +17,11 @@ PROG_DICT = {'jazz on 3': 'b006tt0y',
              'jazz line-up': 'b006tnmw'}
 
 
+class NoneAvailableError(Exception):
+    """Raised when there are no episodes of a programme available"""
+    pass
+
+
 def latest_episode_code(programme_name):
     """Get the code for a programme’s most recent episode"""
     programme_code = PROG_DICT[programme_name]
@@ -24,13 +29,19 @@ def latest_episode_code(programme_name):
     try:
         guide_response = urlopen(guide_url.format(programme_code))
     except HTTPError:
-        return None
+        raise NoneAvailableError(
+            'Could not open the guide page for {}'.format(programme_name)
+            )
     guide_soup = BeautifulSoup(guide_response.read().decode(), 'html.parser')
 
     soup_node = guide_soup.find(class_='programme--episode')
-    code = soup_node['resource'].split('/')[-1]
-
-    return code
+    try:
+        ep_code = soup_node['resource'].split('/')[-1]
+        return ep_code
+    except TypeError:
+        raise NoneAvailableError(
+            'No episodes available for {}'.format(programme_name)
+            )
 
 
 def episode_player_url(episode):
