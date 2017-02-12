@@ -17,11 +17,12 @@ PROG_DICT = {'jazz on 3': 'b006tt0y',
              'jazz line-up': 'b006tnmw'}
 
 
-def latest_episode_code(programme):
+def latest_episode_code(programme_name):
     """Get the code for a programme’s most recent episode"""
+    programme_code = PROG_DICT[programme_name]
     guide_url = 'http://www.bbc.co.uk/programmes/{}/episodes/player'
     try:
-        guide_response = urlopen(guide_url.format(programme))
+        guide_response = urlopen(guide_url.format(programme_code))
     except HTTPError:
         return None
     guide_soup = BeautifulSoup(guide_response.read().decode(), 'html.parser')
