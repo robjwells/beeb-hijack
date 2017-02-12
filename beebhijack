@@ -51,10 +51,8 @@ def interface(argv):
 
     programme = args['<programme>']
     if programme not in bbcradio.PROG_DICT:
-        msg = '{} is not a registered programme'.format(programme)
-        logger.error(msg)
-        logger.error(programmes)
-        sys.exit(-1)
+        logger.error('{} is not a registered programme'.format(programme))
+        docopt(usage, argv=['--help'])
 
     try:
         episode_code = bbcradio.latest_episode_code(args['<programme>'])
