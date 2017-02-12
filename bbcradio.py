@@ -7,6 +7,7 @@ by pre/post-recording scripts called by Audio Hijack Pro.
 """
 
 import re
+import logging
 import sys
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -15,6 +16,9 @@ from bs4 import BeautifulSoup
 
 PROG_DICT = {'jazz on 3': 'b006tt0y',
              'jazz line-up': 'b006tnmw'}
+
+
+logger = logging.getLogger('beebhijack.bbcradio')
 
 
 class NoneAvailableError(Exception):
@@ -26,9 +30,14 @@ def latest_episode_code(programme_name):
     """Get the code for a programme’s most recent episode"""
     programme_code = PROG_DICT[programme_name]
     guide_url = 'http://www.bbc.co.uk/programmes/{}/episodes/player'
+    prog_guide_url = guide_url.format(programme_code)
     try:
-        guide_response = urlopen(guide_url.format(programme_code))
+        guide_response = urlopen(prog_guide_url)
     except HTTPError:
+        logger.warning((
+            'HTTP error occurred when trying to open {} '
+            'for programme {}'
+            ).format(prog_guide_url, programme_name))
         raise NoneAvailableError(
             'Could not open the guide page for {}'.format(programme_name)
             )
@@ -39,6 +48,9 @@ def latest_episode_code(programme_name):
         ep_code = soup_node['resource'].split('/')[-1]
         return ep_code
     except TypeError:
+        logger.warning(
+            'No "programme--episode" items found on page '
+            'for programme {}'.format(programme_name))
         raise NoneAvailableError(
             'No episodes available for {}'.format(programme_name)
             )
